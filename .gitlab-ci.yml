@@ -4,6 +4,7 @@ stages:
   - deploy
 
 initial:
+  stage: build
   script:
     - |
       echo "initial"
