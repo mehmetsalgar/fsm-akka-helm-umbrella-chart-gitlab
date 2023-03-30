@@ -1,0 +1,9 @@
+stages:
+  - .pre
+  - build
+  - deploy
+
+initial:
+  script:
+    - |
+      echo "initial"
