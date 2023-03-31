@@ -8,5 +8,5 @@ appVersion: "${appVersion}"
 dependencies:
   - name: customer-relationship-adapter-application
     version: "${creditScoreVersion}"
-    repository: oci://fsmakka.azurecr.io/helm
+    repository: oci://europe-west3-docker.pkg.dev/fsmakka/fsm-akka-helm-ar
     condition: customer-relationship-adapter-application.enabled
