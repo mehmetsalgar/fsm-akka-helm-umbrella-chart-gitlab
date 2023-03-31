@@ -9,7 +9,9 @@ include:
   - project: 'org.salgar.fsm.akka/ci-cd-gitlab-pipelines'
     file: '/jobs/gradle.yml'
 
+determine-version:
+  extends: .gitversion_function
+
 before_script:
   - GRADLE_USER_HOME="$(pwd)/.gradle"
   - export GRADLE_USER_HOME
-
