@@ -1,0 +1,73 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        maven { url "https://plugins.gradle.org/m2/"}
+    }
+
+    dependencies {
+        classpath "io.github.mehmetsalgar.gradle-plugins.helm:helm-plugin:1.0.5"
+    }
+}
+
+apply plugin: "io.github.mehmetsalgar.helm"
+
+group = 'org.salgar.akka.fsm'
+
+ext {
+    flag = true
+}
+
+if(ext.flag) {
+    ext.props = [
+            HELM_URL: property('HELM_URL'),
+            HELM_PATH: property('HELM_PATH'),
+            HELM_USER: property('HELM_USER'),
+            HELM_PASSWORD: property('HELM_PASSWORD'),
+            HELM_DOWNLOAD_CLIENT: property('HELM_DOWNLOAD_CLIENT'),
+            CREDIT_SCORE_VERSION: property('credit-score-version')
+    ]
+}
+
+helm {
+    downloadClient {
+        enabled = downloadHelmClient()
+        version = '3.11.2'
+    }
+    charts {
+        huc {
+            chartName = 'fsm-akka-helm-umbrella-chart-gitlab'
+            chartVersion = "${project.version}"
+            sourceDir = file('helm')
+            filtering {
+                values.put 'appVersion', "${project.version}-${gitBranch()}"
+                values.put 'customerScoreVersion', "${props.CUSTOMER_RELATIONSHIP_ADAPTER_VERSION}"
+            }
+        }
+    }
+    repositories {
+        ac_rep {
+            oci "oci://${props.URL}${props.PATH}"
+            credentials {
+                username = "${props.HELM_USER}"
+                password = "${props.HELM_PASSWORD}"
+            }
+        }
+    }
+}
+
+def gitBranch() {
+    def branch = ""
+    def proc = "git rev-parse --abbrev-ref HEAD".execute()
+    proc.in.eachLine { line -> branch = line }
+    proc.err.eachLine { line -> println line }
+    proc.waitFor()
+    branch
+}
+
+def downloadHelmClient() {
+    if("true" == property("HELM_DOWNLOAD_CLIENT"))
+        true
+    else
+        false
+}

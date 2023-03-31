@@ -3,8 +3,13 @@ stages:
   - build
   - deploy
 
-initial:
-  stage: build
-  script:
-    - |
-      echo "initial"
+include:
+  - project: 'org.salgar.fsm.akka/ci-cd-gitlab-pipelines'
+    file: '/jobs/gitversion-ci-cd-plugin-extension.gitlab-ci.yml'
+  - project: 'org.salgar.fsm.akka/ci-cd-gitlab-pipelines'
+    file: '/jobs/gradle.yml'
+
+before_script:
+  - GRADLE_USER_HOME="$(pwd)/.gradle"
+  - export GRADLE_USER_HOME
+

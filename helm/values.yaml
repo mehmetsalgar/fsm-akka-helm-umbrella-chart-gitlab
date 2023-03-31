@@ -1,0 +1,10 @@
+address-check:
+  enabled: true
+credit-score:
+  enabled: true
+fraud-prevention:
+  enabled: true
+customer-relationship-adapter-application:
+  enabled: true
+fsm-akka-4eyes-application:
+  enabled: true

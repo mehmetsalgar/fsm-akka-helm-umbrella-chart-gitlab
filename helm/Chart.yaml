@@ -1,0 +1,12 @@
+apiVersion: v2
+name: fsm-akka-application
+description: A Helm chart for Kubernetes
+type: application
+version: 1.5.14
+appVersion: "${appVersion}"
+
+dependencies:
+  - name: customer-relationship-adapter-application
+    version: "${creditScoreVersion}"
+    repository: oci://fsmakka.azurecr.io/helm
+    condition: customer-relationship-adapter-application.enabled

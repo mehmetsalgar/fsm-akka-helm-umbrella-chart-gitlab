@@ -1,0 +1,24 @@
+mode: ContinuousDelivery
+branches:
+  release:
+    tag: rc
+  integration:
+    mode: ContinuousDelivery
+    tag: int
+    increment: None
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+    regex: ^integration?[/-]
+    source-branches:
+      - develop
+      - main
+      - support
+      - release
+    tracks-release-branches: false
+    is-release-branch: true
+    is-mainline: false
+    pre-release-weight: 30000
+ignore:
+  sha: []
+merge-message-formats: {}
+
