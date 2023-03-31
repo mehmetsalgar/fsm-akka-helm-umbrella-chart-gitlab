@@ -47,7 +47,7 @@ helm {
     }
     repositories {
         ac_rep {
-            oci "oci://${props.URL}${props.PATH}"
+            oci "oci://${props.HELM_URL}${props.HELM_PATH}"
             credentials {
                 username = "${props.HELM_USER}"
                 password = "${props.HELM_PASSWORD}"
