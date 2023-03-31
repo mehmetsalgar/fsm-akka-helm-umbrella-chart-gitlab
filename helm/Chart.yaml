@@ -6,7 +6,7 @@ version: 1.5.14
 appVersion: "${appVersion}"
 
 dependencies:
-  - name: customer-relationship-adapter-application
+  - name: credit-score-application
     version: "${creditScoreVersion}"
     repository: oci://europe-west3-docker.pkg.dev/fsmakka/fsm-akka-helm-ar
-    condition: customer-relationship-adapter-application.enabled
+    condition: credit-score.enabled
