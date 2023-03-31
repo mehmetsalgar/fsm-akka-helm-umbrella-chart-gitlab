@@ -3,11 +3,16 @@ stages:
   - build
   - deploy
 
+variables:
+  UMBRELLA_CHART_NAME: "fsm-akka-helm-umbrella-chart-gitlab"
+
 include:
   - project: 'org.salgar.fsm.akka/ci-cd-gitlab-pipelines'
     file: '/jobs/gitversion-ci-cd-plugin-extension.gitlab-ci.yml'
   - project: 'org.salgar.fsm.akka/ci-cd-gitlab-pipelines'
     file: '/jobs/gradle.yml'
+  - project: 'org.salgar.fsm.akka/ci-cd-gitlab-pipelines'
+    file: '/jobs/helm-push-umbrella.yml'
 
 determine-version:
   extends: .gitversion_function
