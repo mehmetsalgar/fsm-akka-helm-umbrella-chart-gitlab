@@ -41,7 +41,7 @@ helm {
             sourceDir = file('helm')
             filtering {
                 values.put 'appVersion', "${project.version}-${gitBranch()}"
-                values.put 'customerScoreVersion', "${props.CUSTOMER_RELATIONSHIP_ADAPTER_VERSION}"
+                values.put 'creditScoreVersion', "${props.CREDIT_SCORE_VERSION}"
             }
         }
     }
