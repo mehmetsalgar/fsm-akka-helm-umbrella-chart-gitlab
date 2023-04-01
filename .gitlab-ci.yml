@@ -20,3 +20,12 @@ determine-version:
 before_script:
   - GRADLE_USER_HOME="$(pwd)/.gradle"
   - export GRADLE_USER_HOME
+
+prepare_environment:
+  stage: deploy
+  needs:
+    - helm-push-umbrella
+  trigger:
+    project: org.salgar.fsm.akka/fsm-akka-dev-environment
+    branch: 'development'
+    strategy: depend
