@@ -23,6 +23,7 @@ prepare_helm_umbrella_chart:
     - build-gradle
   variables:
     UMBRELLA_CHART_NAME: "fsm-akka-helm-umbrella-chart-gitlab"
+    CHART_VERSION: $GitVersion_SemVer
     GRADLE_COMMAND: "helmPackage -Pversion=$GitVersion_SemVer"
   trigger:
     include:
