@@ -25,7 +25,9 @@ prepare_helm_umbrella_chart:
     UMBRELLA_CHART_NAME: "fsm-akka-helm-umbrella-chart-gitlab"
     GRADLE_COMMAND: "helmPackage -Pversion=$GitVersion_SemVer"
   trigger:
-    include: 'org.salgar.fsm.akka/ci-cd-gitlab-pipelines/jobs/helm-push-umbrella.yml'
+    include:
+      - project: 'org.salgar.fsm.akka/ci-cd-gitlab-pipelines'
+        file: '/jobs/helm-push-umbrella.yml'
     strategy: depend
 
 prepare_environment:
