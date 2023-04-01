@@ -14,7 +14,7 @@ include:
   - project: 'org.salgar.fsm.akka/ci-cd-gitlab-pipelines'
     file: '/jobs/helm-push-umbrella.yml'
 
-determine-version:
+determine-version-umbrella:
   extends: .gitversion_function
 
 before_script:
