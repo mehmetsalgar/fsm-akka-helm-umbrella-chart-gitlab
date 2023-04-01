@@ -31,7 +31,7 @@ prepare_helm_umbrella_chart:
 prepare_environment:
   stage: deploy
   needs:
-    - helm-push-umbrella
+    - prepare_helm_umbrella_chart
   trigger:
     project: org.salgar.fsm.akka/fsm-akka-dev-environment
     branch: 'development'
