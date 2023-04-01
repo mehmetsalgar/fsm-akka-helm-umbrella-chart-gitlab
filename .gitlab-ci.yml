@@ -20,7 +20,7 @@ prepare_helm_umbrella_chart:
   stage: deploy
   needs:
     - determine-version
-    - build_gradle
+    - build-gradle
   variables:
     UMBRELLA_CHART_NAME: "fsm-akka-helm-umbrella-chart-gitlab"
     GRADLE_COMMAND: "helmPackage -Pversion=$GitVersion_SemVer"
