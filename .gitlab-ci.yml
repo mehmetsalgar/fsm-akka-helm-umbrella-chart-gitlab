@@ -5,6 +5,7 @@ stages:
 
 variables:
   UMBRELLA_CHART_NAME: "fsm-akka-helm-umbrella-chart-gitlab"
+  GRADLE_COMMAND: "helmPackage -Pversion=$GitVersion_SemVer"
 
 include:
   - project: 'org.salgar.fsm.akka/ci-cd-gitlab-pipelines'
@@ -14,7 +15,7 @@ include:
   - project: 'org.salgar.fsm.akka/ci-cd-gitlab-pipelines'
     file: '/jobs/helm-push-umbrella.yml'
 
-determine-version-umbrella:
+determine-version:
   extends: .gitversion_function
 
 before_script:
