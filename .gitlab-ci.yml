@@ -22,9 +22,10 @@ prepare_helm_umbrella_chart:
     - determine-version
     - build-gradle
   variables:
-    UMBRELLA_CHART_NAME: "fsm-akka-helm-umbrella-chart-gitlab"
+    CHART_NAME: "fsm-akka-helm-umbrella-chart-gitlab"
     CHART_VERSION: $GitVersion_SemVer
     GRADLE_COMMAND: "helmPackage -Pversion=$GitVersion_SemVer"
+    PARENT_PIPELINE_ID: $CI_PIPELINE_ID
   trigger:
     include:
       - project: 'org.salgar.fsm.akka/ci-cd-gitlab-pipelines'
