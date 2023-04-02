@@ -3,6 +3,13 @@ stages:
   - build
   - deploy
 
+workflow:
+  rules:
+    - changes:
+       - .gitlab-ci.yml
+      when: never
+    - when: always
+
 include:
   - project: 'org.salgar.fsm.akka/ci-cd-gitlab-pipelines'
     file: '/jobs/gitversion-ci-cd-plugin-extension.gitlab-ci.yml'
@@ -20,7 +27,8 @@ prepare_helm_umbrella_chart:
   stage: deploy
   needs:
     - determine-version
-    - build-gradle
+    - job: build-gradle
+      artifacts: true
   variables:
     CHART_NAME: "fsm-akka-helm-umbrella-chart-gitlab"
     CHART_VERSION: $GitVersion_SemVer
