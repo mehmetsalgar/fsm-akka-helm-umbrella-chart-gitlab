@@ -52,10 +52,10 @@ prepare-helm-umbrella-chart:
         file: '/jobs/helm-push.yml'
     strategy: depend
 
-prepare_environment:
+prepare-environment:
   stage: deploy
   needs:
-    - prepare_helm_umbrella_chart
+    - prepare-helm-umbrella-chart
   trigger:
     project: org.salgar.fsm.akka/fsm-akka-dev-environment
     branch: 'development'
