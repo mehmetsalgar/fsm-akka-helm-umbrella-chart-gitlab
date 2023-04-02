@@ -24,7 +24,8 @@ before_script:
 prepare_helm_umbrella_chart:
   stage: deploy
   needs:
-    - determine-version
+    - job: determine-version
+      artifacts: true
     - job: build-gradle
       artifacts: true
   variables:
