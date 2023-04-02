@@ -13,8 +13,6 @@ variables:
 include:
   - project: 'org.salgar.fsm.akka/ci-cd-gitlab-pipelines'
     file: '/jobs/gitversion-ci-cd-plugin-extension.gitlab-ci.yml'
-  - project: 'org.salgar.fsm.akka/ci-cd-gitlab-pipelines'
-    file: '/jobs/gradle.yml'
 
 determine-version:
   extends: .gitversion_function
@@ -23,12 +21,26 @@ before_script:
   - GRADLE_USER_HOME="$(pwd)/.gradle"
   - export GRADLE_USER_HOME
 
-prepare_helm_umbrella_chart:
+package-helm-umbrella-chart:
   stage: deploy
   needs:
     - job: determine-version
       artifacts: true
-    - job: build-gradle
+  variables:
+    BUILD_VERSION: $GitVersion_SemVer
+    GRADLE_COMMAND: "helmPackage -Pversion="
+  trigger:
+    include:
+      - project: 'org.salgar.fsm.akka/ci-cd-gitlab-pipelines'
+        file: '/jobs/gradle.yml'
+    strategy: depend
+
+prepare-helm-umbrella-chart:
+  stage: deploy
+  needs:
+    - job: determine-version
+      artifacts: true
+    - job: package-helm-umbrella-chart
       artifacts: true
   variables:
     CHART_NAME: "fsm-akka-helm-umbrella-chart-gitlab"
