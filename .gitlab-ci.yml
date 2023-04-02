@@ -8,13 +8,11 @@ stages:
 #    changes:
 #      - .gitlab-ci.yml
 
-variables:
-  BUILD_VERSION: $GitVersion_SemVer
 include:
   - project: 'org.salgar.fsm.akka/ci-cd-gitlab-pipelines'
     file: '/jobs/gitversion-ci-cd-plugin-extension.gitlab-ci.yml'
 
-determine-version:
+determine-umbrella-version:
   extends: .gitversion_function
 
 before_script:
@@ -25,14 +23,14 @@ package-helm-chart:
   stage: deploy
   image: gradle:7.6.1-jdk17-alpine
   needs:
-    - job: determine-version
+    - job: determine-umbrella-version
       artifacts: true
   variables:
-    BUILD_VERSION: $GitVersion_SemVer
+    UMBRELLA_VERSION: $GitVersion_SemVer
   script:
     - |
       export
-      gradle --build-cache helmPackage -Pversion=$BUILD_VERSION
+      gradle --build-cache helmPackage -Pversion=$UMBRELLA_VERSION
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
@@ -47,7 +45,7 @@ prepare-helm-umbrella-chart:
   stage: deploy
   image: dtzar/helm-kubectl:3.11.2
   needs:
-    - job: determine-version
+    - job: determine-umbrella-version
       artifacts: true
     - job: package-helm-chart
       artifacts: true
