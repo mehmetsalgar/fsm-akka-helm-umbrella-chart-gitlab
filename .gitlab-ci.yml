@@ -3,10 +3,10 @@ stages:
   - build
   - deploy
 
-workflow:
-  except:
-    changes:
-      - .gitlab-ci.yml
+#workflow:
+#  except:
+#    changes:
+#      - .gitlab-ci.yml
 
 include:
   - project: 'org.salgar.fsm.akka/ci-cd-gitlab-pipelines'
