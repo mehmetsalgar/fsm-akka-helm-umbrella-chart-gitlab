@@ -21,37 +21,44 @@ before_script:
   - GRADLE_USER_HOME="$(pwd)/.gradle"
   - export GRADLE_USER_HOME
 
-build-gradle:
+package-helm-chart:
   stage: deploy
+  image: gradle:7.6.1-jdk17-alpine
   needs:
     - job: determine-version
       artifacts: true
   variables:
     BUILD_VERSION: $GitVersion_SemVer
-    GRADLE_COMMAND: "helmPackage -Pversion="
-    BUILD_PIPELINE_ID: $CI_PIPELINE_ID
-  trigger:
-    include:
-      - project: 'org.salgar.fsm.akka/ci-cd-gitlab-pipelines'
-        file: '/jobs/gradle.yml'
-    strategy: depend
+  script:
+    - |
+      export
+      gradle --build-cache helmPackage -Pversion=$BUILD_VERSION
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: push
+    paths:
+      - build
+      - .gradle
+  artifacts:
+    paths:
+      - build/helm/charts/*.tgz
 
 prepare-helm-umbrella-chart:
   stage: deploy
+  image: dtzar/helm-kubectl:3.11.2
   needs:
     - job: determine-version
       artifacts: true
-    - job: build-gradle
+    - job: package-helm-chart
       artifacts: true
   variables:
     CHART_NAME: "fsm-akka-helm-umbrella-chart-gitlab"
     CHART_VERSION: $GitVersion_SemVer
-    PARENT_PIPELINE_ID: $BUILD_PIPELINE_ID
-  trigger:
-    include:
-      - project: 'org.salgar.fsm.akka/ci-cd-gitlab-pipelines'
-        file: '/jobs/helm-push.yml'
-    strategy: depend
+  script:
+    - |
+      echo $HELM_PASSWORD | helm registry login $HELM_URL -u $HELM_USER --password-stdin
+      echo "helm push /build/helm/charts/$CHART_NAME-$CHART_VERSION.tgz oci://$HELM_URL$HELM_PATH"
+      helm push build/helm/charts/$CHART_NAME-$CHART_VERSION.tgz oci://$HELM_URL$HELM_PATH
 
 prepare-environment:
   stage: deploy
