@@ -6,7 +6,7 @@ stages:
 workflow:
   rules:
     - changes:
-       - .gitlab-ci.yml
+        - .gitlab-ci.yml
       when: never
     - when: always
 
