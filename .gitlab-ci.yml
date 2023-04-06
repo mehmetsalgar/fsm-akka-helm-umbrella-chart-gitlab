@@ -32,7 +32,7 @@ create-branch:
   stage: deploy
   script:
     -|
-    echo "create branch $BRANCH_NAME"
+    echo "create branch $BRANCH_NAME-$SOURCE-REPO"
   rules:
     - if: $USE_CASE_2 == "true" && $CREATE_BRANCH == "true"
       when: always
@@ -114,6 +114,7 @@ prepare-service-for-environment:
     - create-branch
   variables:
     BRANCH_NAME: $BRANCH_NAME
+    SOURCE-REPO: $SOURCE-REPO
     UMBRELLA_BASE_BRANCH_NAME: "development"
   trigger:
     project: org.salgar.fsm.akka/fsm-akka-dev-environment
