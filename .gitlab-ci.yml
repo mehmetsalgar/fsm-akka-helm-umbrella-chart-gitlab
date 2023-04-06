@@ -34,7 +34,7 @@ create-branch:
     -|
     echo "create branch $BRANCH_NAME"
   rules:
-    - if: $USE_CASE_2 == true && $CREATE_BRANCH == "true"
+    - if: $USE_CASE_2 == "true" && $CREATE_BRANCH == "true"
       when: always
     - when: never
 
@@ -118,6 +118,6 @@ prepare-service-for-environment:
     branch: $BRANCH_NAME
     strategy: depend
   rules:
-    - if: $USE_CASE_2 == true && $CREATE_BRANCH != "true"
+    - if: $USE_CASE_2 == "true" && $CREATE_BRANCH != "true"
       when: always
     - when: never
