@@ -97,6 +97,7 @@ prepare-environment:
   needs:
     - prepare-helm-umbrella-chart
   variables:
+    BRANCH_NAME: $BRANCH_NAME
     UMBRELLA_BASE_BRANCH_NAME: "development"
   trigger:
     project: org.salgar.fsm.akka/fsm-akka-dev-environment
@@ -112,6 +113,7 @@ prepare-service-for-environment:
   needs:
     - create-branch
   variables:
+    BRANCH_NAME: $BRANCH_NAME
     UMBRELLA_BASE_BRANCH_NAME: "development"
   trigger:
     project: org.salgar.fsm.akka/fsm-akka-dev-environment
