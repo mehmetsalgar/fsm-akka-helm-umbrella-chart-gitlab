@@ -3,6 +3,18 @@ stages:
   - build
   - deploy
 
+variables:
+  CREATE_BRANCH: "false"
+
+workflow:
+  rules:
+    - if: $USE_CASE_1 == "true"
+      variables:
+        UMBRELLA_GRADLE_COMMAND: "helmPackage -Pversion="
+    - if: $USE_CASE_2 == "true"
+      variables:
+        UMBRELLA_GRADLE_COMMAND: "helmPackage -P$REPO_NAME-version=$SERVICE_CHART_VERSION-Pversion="
+
 #workflow:
 #  except:
 #    changes:
@@ -12,12 +24,26 @@ include:
   - project: 'org.salgar.fsm.akka/ci-cd-gitlab-pipelines'
     file: '/jobs/gitversion-ci-cd-plugin-extension.gitlab-ci.yml'
 
-determine-umbrella-version:
-  extends: .gitversion_function
-
 before_script:
   - GRADLE_USER_HOME="$(pwd)/.gradle"
   - export GRADLE_USER_HOME
+
+create-branch:
+  stage: deploy
+  script:
+    -|
+    echo "create branch $BRANCH_NAME"
+  rules:
+    - if: $USE_CASE_2 == true && $CREATE_BRANCH == "true"
+      when: always
+    - when: never
+
+determine-umbrella-version:
+  extends: .gitversion_function
+  rules:
+    - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true") && $CREATE_BRANCH != "true"
+      when: always
+    - when: never
 
 package-helm-chart:
   stage: deploy
@@ -30,7 +56,7 @@ package-helm-chart:
   script:
     - |
       export
-      gradle --build-cache helmPackage -Pversion=$UMBRELLA_VERSION
+      gradle --build-cache $UMBRELLA_GRADLE_COMMAND$UMBRELLA_VERSION
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
@@ -40,6 +66,10 @@ package-helm-chart:
   artifacts:
     paths:
       - build/helm/charts/*.tgz
+  rules:
+    - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true") && $CREATE_BRANCH != "true"
+      when: always
+    - when: never
 
 prepare-helm-umbrella-chart:
   stage: deploy
@@ -57,12 +87,37 @@ prepare-helm-umbrella-chart:
       echo $HELM_PASSWORD | helm registry login $HELM_URL -u $HELM_USER --password-stdin
       echo "helm push /build/helm/charts/$CHART_NAME-$CHART_VERSION.tgz oci://$HELM_URL$HELM_PATH"
       helm push build/helm/charts/$CHART_NAME-$CHART_VERSION.tgz oci://$HELM_URL$HELM_PATH
+  rules:
+    - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true") && $CREATE_BRANCH != "true"
+      when: always
+    - when: never
 
 prepare-environment:
   stage: deploy
   needs:
     - prepare-helm-umbrella-chart
+  variables:
+    UMBRELLA_BASE_BRANCH_NAME: "development"
   trigger:
     project: org.salgar.fsm.akka/fsm-akka-dev-environment
     branch: 'development'
     strategy: depend
+  rules:
+    - if: $USE_CASE_1 == "true"
+      when: always
+    - when: never
+
+prepare-service-for-environment:
+  stage: deploy
+  needs:
+    - create-branch
+  variables:
+    UMBRELLA_BASE_BRANCH_NAME: "development"
+  trigger:
+    project: org.salgar.fsm.akka/fsm-akka-dev-environment
+    branch: $BRANCH_NAME
+    strategy: depend
+  rules:
+    - if: $USE_CASE_2 == true && $CREATE_BRANCH != "true"
+      when: always
+    - when: never
