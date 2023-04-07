@@ -5,7 +5,6 @@ stages:
 
 variables:
   CREATE_BRANCH: "false"
-  GIT_FETCH_EXTRA_FLAGS: "--unshallow"
 
 workflow:
   rules:
@@ -42,6 +41,8 @@ create-branch:
 
 determine-umbrella-version:
   extends: .gitversion_function
+  variables:
+    GIT_FETCH_EXTRA_FLAGS: "--unshallow"
   rules:
     - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true") && $CREATE_BRANCH != "true"
       when: always
