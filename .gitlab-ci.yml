@@ -5,6 +5,7 @@ stages:
 
 variables:
   CREATE_BRANCH: "false"
+  GIT_FETCH_EXTRA_FLAGS: "--unshallow"
 
 workflow:
   rules:
