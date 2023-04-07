@@ -31,9 +31,9 @@ before_script:
 create-branch:
   stage: deploy
   script:
-    -|
-    export
-    echo "create branch $BRANCH_NAME-$SOURCE_REPO"
+    - |
+      export
+      echo "create branch $BRANCH_NAME-$SOURCE_REPO"
   rules:
     - if: $USE_CASE_2 == "true" && $CREATE_BRANCH == "true"
       when: always
