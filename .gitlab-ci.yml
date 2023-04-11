@@ -113,8 +113,6 @@ prepare-environment:
 
 prepare-service-for-environment:
   stage: deploy
-  needs:
-    - create-branch
   variables:
     BRANCH_NAME: $BRANCH_NAME
     SOURCE_REPO: $SOURCE_REPO
