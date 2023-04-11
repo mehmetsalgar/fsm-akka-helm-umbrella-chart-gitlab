@@ -122,7 +122,7 @@ prepare-service-for-environment:
     SERVICE_VERSION: $SERVICE_CHART_VERSION
   trigger:
     project: org.salgar.fsm.akka/fsm-akka-dev-environment
-    branch: $BRANCH_NAME
+    branch: $UMBRELLA_BASE_BRANCH_NAME
     strategy: depend
   rules:
     - if: $USE_CASE_2 == "true" && $CREATE_BRANCH != "true"
