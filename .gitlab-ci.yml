@@ -98,6 +98,7 @@ prepare-environment:
   needs:
     - prepare-helm-umbrella-chart
   variables:
+    GIT_BRANCH_NAME: $BRANCH_NAME
     BRANCH_NAME: $BRANCH_NAME
     SOURCE_REPO: $SOURCE_REPO
     UMBRELLA_BASE_BRANCH_NAME: "development"
@@ -114,6 +115,7 @@ prepare-environment:
 prepare-service-for-environment:
   stage: deploy
   variables:
+    GIT_BRANCH_NAME: $BRANCH_NAME-$SOURCE_REPO
     BRANCH_NAME: $BRANCH_NAME
     SOURCE_REPO: $SOURCE_REPO
     UMBRELLA_BASE_BRANCH_NAME: "development"
