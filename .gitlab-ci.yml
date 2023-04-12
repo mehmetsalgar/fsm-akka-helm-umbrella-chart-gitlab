@@ -105,7 +105,7 @@ prepare-environment:
     SERVICE_VERSION: $SERVICE_CHART_VERSION
     GIT_CHECKOUT_COMMAND: "git checkout"
   trigger:
-    project: org.salgar.fsm.akka/fsm-akka-dev-environment
+    project: 'org.salgar.fsm.akka/fsm-akka-dev-environment'
     branch: 'development'
     strategy: depend
   rules:
@@ -115,6 +115,8 @@ prepare-environment:
 
 prepare-service-for-environment:
   stage: deploy
+  needs:
+    - prepare-helm-umbrella-chart
   variables:
     GIT_BRANCH_NAME: $BRANCH_NAME-$SOURCE_REPO
     BRANCH_NAME: $BRANCH_NAME
@@ -123,10 +125,21 @@ prepare-service-for-environment:
     SERVICE_VERSION: $SERVICE_CHART_VERSION
     GIT_CHECKOUT_COMMAND: "git checkout -b"
   trigger:
-    project: org.salgar.fsm.akka/fsm-akka-dev-environment
+    project: 'org.salgar.fsm.akka/fsm-akka-dev-environment'
     branch: $UMBRELLA_BASE_BRANCH_NAME
     strategy: depend
   rules:
     - if: $USE_CASE_2 == "true" && $CREATE_BRANCH != "true"
+      when: always
+    - when: never
+
+delete_branch:
+  stage: deploy
+  script:
+    - |
+      export
+      echo "Deleting Branch: $TARGET_BRANCH_NAME-$SOURCE_REPO"
+  rules:
+    - if: $USER_CASE_3 == "true"
       when: always
     - when: never
