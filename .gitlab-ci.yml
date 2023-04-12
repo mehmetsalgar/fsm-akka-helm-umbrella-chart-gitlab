@@ -14,6 +14,8 @@ workflow:
     - if: $USE_CASE_2 == "true"
       variables:
         UMBRELLA_GRADLE_COMMAND: "helmPackage -P$SOURCE_REPO-version=$SERVICE_CHART_VERSION -Pversion="
+    - if: $USE_CASE_3 == "true"
+
 
 #workflow:
 #  except:
