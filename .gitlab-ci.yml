@@ -14,7 +14,6 @@ workflow:
     - if: $USE_CASE_2 == "true"
       variables:
         UMBRELLA_GRADLE_COMMAND: "helmPackage -P$SOURCE_REPO-version=$SERVICE_CHART_VERSION -Pversion="
-    - if: $USE_CASE_3 == "true"
 
 
 #workflow:
@@ -37,14 +36,14 @@ create-branch:
       export
       echo "create branch ${BRANCH_NAME}-${SOURCE_REPO}"
   rules:
-    - if: $USE_CASE_2 == "true" && $CREATE_BRANCH == "true"
+    - if: $USE_CASE_2 == "true" && $CREATE_BRANCH == "true" && $USE_CASE_3 != "true"
       when: always
     - when: never
 
 determine-umbrella-version:
   extends: .gitversion_function
   rules:
-    - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true") && $CREATE_BRANCH != "true"
+    - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true"
       when: always
     - when: never
 
@@ -70,7 +69,7 @@ package-helm-chart:
     paths:
       - build/helm/charts/*.tgz
   rules:
-    - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true") && $CREATE_BRANCH != "true"
+    - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true"
       when: always
     - when: never
 
@@ -91,7 +90,7 @@ prepare-helm-umbrella-chart:
       echo "helm push /build/helm/charts/$CHART_NAME-$CHART_VERSION.tgz oci://$HELM_URL$HELM_PATH"
       helm push build/helm/charts/$CHART_NAME-$CHART_VERSION.tgz oci://$HELM_URL$HELM_PATH
   rules:
-    - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true") && $CREATE_BRANCH != "true"
+    - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true"
       when: always
     - when: never
 
@@ -111,7 +110,7 @@ prepare-environment:
     branch: 'development'
     strategy: depend
   rules:
-    - if: $USE_CASE_1 == "true"
+    - if: $USE_CASE_1 == "true" && $USE_CASE_3 != "true"
       when: always
     - when: never
 
@@ -131,7 +130,7 @@ prepare-service-for-environment:
     branch: $UMBRELLA_BASE_BRANCH_NAME
     strategy: depend
   rules:
-    - if: $USE_CASE_2 == "true" && $CREATE_BRANCH != "true"
+    - if: $USE_CASE_2 == "true" && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true"
       when: always
     - when: never
 
