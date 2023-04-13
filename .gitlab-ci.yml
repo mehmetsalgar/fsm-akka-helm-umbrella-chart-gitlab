@@ -105,6 +105,9 @@ prepare-environment:
     UMBRELLA_BASE_BRANCH_NAME: "development"
     SERVICE_VERSION: $SERVICE_CHART_VERSION
     GIT_CHECKOUT_COMMAND: "git checkout"
+    USE_CASE_1: $USE_CASE_1
+    USE_CASE_2: $USE_CASE_2
+    USE_CASE_3: "false"
   trigger:
     project: 'org.salgar.fsm.akka/fsm-akka-dev-environment'
     branch: 'development'
