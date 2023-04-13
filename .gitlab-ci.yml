@@ -131,7 +131,7 @@ prepare-service-for-environment:
     branch: $UMBRELLA_BASE_BRANCH_NAME
     strategy: depend
   rules:
-    - if: $USE_CASE_2 == "true" && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true"
+    - if: $USE_CASE_2 == "true" && $CREATE_BRANCH != "true"
       when: always
     - when: never
 
