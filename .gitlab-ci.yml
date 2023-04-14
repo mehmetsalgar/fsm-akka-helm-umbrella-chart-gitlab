@@ -5,6 +5,7 @@ stages:
 
 variables:
   CREATE_BRANCH: "false"
+  USE_CASE_6: "false"
 
 workflow:
   rules:
@@ -17,6 +18,10 @@ workflow:
     - if: $USE_CASE_4 == "true"
       variables:
         UMBRELLA_GRADLE_COMMAND: "helmPackage -P$SOURCE_REPO-version=$SERVICE_CHART_VERSION -Pversion="
+    - if: $CI_COMMIT_REF_NAME =~ /integration/
+      when: always
+      variables:
+        USE_CASE_6: "true"
 
 
 #workflow:
@@ -46,7 +51,7 @@ create-branch:
 determine-umbrella-version:
   extends: .gitversion_function
   rules:
-    - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true" || $USE_CASE_4 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
+    - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true" || $USE_CASE_4 == "true" || $USE_CASE_6 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
       when: always
     - when: never
 
@@ -72,7 +77,7 @@ package-helm-chart:
     paths:
       - build/helm/charts/*.tgz
   rules:
-    - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true" || $USE_CASE_4 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
+    - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true" || $USE_CASE_4 == "true" || $USE_CASE_6 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
       when: always
     - when: never
 
@@ -93,7 +98,7 @@ prepare-helm-umbrella-chart:
       echo "helm push /build/helm/charts/$CHART_NAME-$CHART_VERSION.tgz oci://$HELM_URL$HELM_PATH"
       helm push build/helm/charts/$CHART_NAME-$CHART_VERSION.tgz oci://$HELM_URL$HELM_PATH
   rules:
-    - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true" || $USE_CASE_4 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
+    - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true" || $USE_CASE_4 == "true" || $USE_CASE_6 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
       when: always
     - when: never
 
@@ -143,7 +148,7 @@ prepare-service-for-environment:
     branch: $UMBRELLA_BASE_BRANCH_NAME
     strategy: depend
   rules:
-    - if: ($USE_CASE_2 == "true" || $USE_CASE_4 == "true") && $CREATE_BRANCH != "true"
+    - if: ($USE_CASE_2 == "true" || $USE_CASE_4 == "true" || $USE_CASE_6 == "true") && $CREATE_BRANCH != "true"
       when: always
     - when: never
 
@@ -154,6 +159,53 @@ delete_branch:
       export
       echo "Deleting Branch: $TARGET_BRANCH_NAME-$SOURCE_REPO"
   rules:
-    - if: ($USE_CASE_3 == "true" || $USE_CASE_5 != "true")
+    - if: ($USE_CASE_3 == "true" || $USE_CASE_5 == "true")
       when: always
+    - when: never
+
+continuous-deployment-release-prepare-environment:
+  stage: deploy
+  needs:
+    - continuous-deployment-release
+  variables:
+    BRANCH_NAME: $CI_COMMIT_REF_NAME
+  trigger:
+    project: 'org.salgar.fsm.akka/fsm-akka-4eyes-argocd'
+    branch: 'master'
+    strategy: depend
+  rules:
+    - if: $USE_CASE_6 == "true"
+      when: always
+    - when: never
+
+cleanup-integration-environment-argocd:
+  stage: deploy
+  needs:
+    - prepare-service-for-environment
+  variables:
+    TARGET_BRANCH_NAME: $CI_COMMIT_REF_NAME
+    BRANCH_NAME: $CI_COMMIT_REF_NAME
+    USE_CASE_7: "true"
+  trigger:
+    project: 'org.salgar.fsm.akka/fsm-akka-4eyes-argocd'
+    branch: 'master'
+    strategy: depend
+  rules:
+    - if: $USE_CASE_6 == "true"
+      when: manual
+    - when: never
+
+cleanup-integration-environment-branch:
+  stage: deploy
+  needs:
+    - prepare-service-for-environment
+  variables:
+    USE_CASE_7: "true"
+  trigger:
+    project: 'org.salgar.fsm.akka/fsm-akka-dev-environment'
+    branch: 'development'
+    strategy: depend
+  rules:
+    - if: $USE_CASE_6 == "true"
+      when: manual
     - when: never
