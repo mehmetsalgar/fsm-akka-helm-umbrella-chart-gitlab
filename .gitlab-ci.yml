@@ -163,10 +163,10 @@ delete_branch:
       when: always
     - when: never
 
-continuous-deployment-release-prepare-environment:
+continuous-integration-prepare-environment:
   stage: deploy
   needs:
-    - continuous-deployment-release
+    - prepare-service-for-environment
   variables:
     BRANCH_NAME: $CI_COMMIT_REF_NAME
   trigger:
@@ -181,7 +181,7 @@ continuous-deployment-release-prepare-environment:
 cleanup-integration-environment-argocd:
   stage: deploy
   needs:
-    - prepare-service-for-environment
+    - continuous-integration-prepare-environment
   variables:
     TARGET_BRANCH_NAME: $CI_COMMIT_REF_NAME
     BRANCH_NAME: $CI_COMMIT_REF_NAME
