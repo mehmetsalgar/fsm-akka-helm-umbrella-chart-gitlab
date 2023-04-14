@@ -39,14 +39,14 @@ create-branch:
       export
       echo "create branch ${BRANCH_NAME}-${SOURCE_REPO}"
   rules:
-    - if: ($USE_CASE_2 == "true" || $USE_CASE_4 == "true") && $CREATE_BRANCH == "true" && $USE_CASE_3 != "true"
+    - if: ($USE_CASE_2 == "true" || $USE_CASE_4 == "true") && $CREATE_BRANCH == "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
       when: always
     - when: never
 
 determine-umbrella-version:
   extends: .gitversion_function
   rules:
-    - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true" || $USE_CASE_4 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true"
+    - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true" || $USE_CASE_4 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
       when: always
     - when: never
 
@@ -72,7 +72,7 @@ package-helm-chart:
     paths:
       - build/helm/charts/*.tgz
   rules:
-    - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true" || $USE_CASE_4 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true"
+    - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true" || $USE_CASE_4 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
       when: always
     - when: never
 
@@ -93,7 +93,7 @@ prepare-helm-umbrella-chart:
       echo "helm push /build/helm/charts/$CHART_NAME-$CHART_VERSION.tgz oci://$HELM_URL$HELM_PATH"
       helm push build/helm/charts/$CHART_NAME-$CHART_VERSION.tgz oci://$HELM_URL$HELM_PATH
   rules:
-    - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true" || $USE_CASE_4 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true"
+    - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true" || $USE_CASE_4 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
       when: always
     - when: never
 
@@ -116,20 +116,23 @@ prepare-environment:
     branch: 'development'
     strategy: depend
   rules:
-    - if: $USE_CASE_1 == "true" && $USE_CASE_3 != "true"
+    - if: $USE_CASE_1 == "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
       when: always
     - when: never
 
 prepare-service-for-environment:
   stage: deploy
   needs:
+    - job: determine-umbrella-version
+      artifacts: true
     - prepare-helm-umbrella-chart
   variables:
     GIT_BRANCH_NAME: $BRANCH_NAME-$SOURCE_REPO
     BRANCH_NAME: $BRANCH_NAME
     SOURCE_REPO: $SOURCE_REPO
-    UMBRELLA_BASE_BRANCH_NAME: "development"
     SERVICE_VERSION: $SERVICE_CHART_VERSION
+    UMBRELLA_BASE_BRANCH_NAME: "development"
+    UMBRELLA_CHART_VERSION: $GitVersion_SemVer
     GIT_CHECKOUT_COMMAND: "git checkout -b"
     USE_CASE_1: $USE_CASE_1
     USE_CASE_2: $USE_CASE_2
@@ -151,6 +154,6 @@ delete_branch:
       export
       echo "Deleting Branch: $TARGET_BRANCH_NAME-$SOURCE_REPO"
   rules:
-    - if: $USE_CASE_3 == "true"
+    - if: ($USE_CASE_3 == "true" || && $USE_CASE_5 != "true")
       when: always
     - when: never
