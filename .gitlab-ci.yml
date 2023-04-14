@@ -22,6 +22,7 @@ workflow:
       when: always
       variables:
         USE_CASE_6: "true"
+        UMBRELLA_GRADLE_COMMAND: "helmPackage -Pversion="
 
 
 #workflow:
