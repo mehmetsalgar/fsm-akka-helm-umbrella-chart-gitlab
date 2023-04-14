@@ -158,7 +158,7 @@ prepare-service-for-environment:
   rules:
     - if: ($USE_CASE_2 == "true" || $USE_CASE_4 == "true") && $CREATE_BRANCH != "true"
       when: always
-    - if: $USE_CASE_6 == "true" && && $CREATE_BRANCH != "true"
+    - if: $USE_CASE_6 == "true" && $CREATE_BRANCH != "true"
       variables:
         TAG: $GitVersion_SemVer
       when: always
