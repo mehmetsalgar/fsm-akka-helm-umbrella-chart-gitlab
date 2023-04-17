@@ -15,14 +15,22 @@ workflow:
     - if: $USE_CASE_2 == "true"
       variables:
         UMBRELLA_GRADLE_COMMAND: "helmPackage -P$SOURCE_REPO-version=$SERVICE_CHART_VERSION -Pversion="
+        BRANCH_NAME: $BRANCH_NAME
+        GIT_BRANCH_NAME: $BRANCH_NAME-$SOURCE_REPO
+        TAG: $SOURCE_REPO-$SERVICE_VERSION
     - if: $USE_CASE_4 == "true"
       variables:
         UMBRELLA_GRADLE_COMMAND: "helmPackage -P$SOURCE_REPO-version=$SERVICE_CHART_VERSION -Pversion="
+        BRANCH_NAME: $BRANCH_NAME
+        GIT_BRANCH_NAME: $BRANCH_NAME-$SOURCE_REPO
+        TAG: $SOURCE_REPO-$SERVICE_VERSION
     - if: $CI_COMMIT_REF_NAME =~ /integration/
       when: always
       variables:
         USE_CASE_6: "true"
-
+        BRANCH_NAME: $CI_COMMIT_REF_NAME
+        GIT_BRANCH_NAME: $CI_COMMIT_REF_NAME
+        UMBRELLA_GRADLE_COMMAND: "helmPackage -Pversion="
 
 #workflow:
 #  except:
@@ -132,13 +140,13 @@ prepare-service-for-environment:
       artifacts: true
     - prepare-helm-umbrella-chart
   variables:
-    GIT_BRANCH_NAME: $BRANCH_NAME-$SOURCE_REPO
     BRANCH_NAME: $BRANCH_NAME
-    SOURCE_REPO: $SOURCE_REPO
+    GIT_CHECKOUT_COMMAND: "git checkout -b"
     SERVICE_VERSION: $SERVICE_CHART_VERSION
+    SOURCE_REPO: $SOURCE_REPO
     UMBRELLA_BASE_BRANCH_NAME: "development"
     UMBRELLA_CHART_VERSION: $GitVersion_SemVer
-    GIT_CHECKOUT_COMMAND: "git checkout -b"
+    TAG: $SOURCE_REPO-$SERVICE_VERSION
     USE_CASE_1: $USE_CASE_1
     USE_CASE_2: $USE_CASE_2
     USE_CASE_4: $USE_CASE_4
@@ -148,7 +156,11 @@ prepare-service-for-environment:
     branch: $UMBRELLA_BASE_BRANCH_NAME
     strategy: depend
   rules:
-    - if: ($USE_CASE_2 == "true" || $USE_CASE_4 == "true" || $USE_CASE_6 == "true") && $CREATE_BRANCH != "true"
+    - if: ($USE_CASE_2 == "true" || $USE_CASE_4 == "true") && $CREATE_BRANCH != "true"
+      when: always
+    - if: $USE_CASE_6 == "true" && $CREATE_BRANCH != "true"
+      variables:
+        TAG: $GitVersion_SemVer
       when: always
     - when: never
 
