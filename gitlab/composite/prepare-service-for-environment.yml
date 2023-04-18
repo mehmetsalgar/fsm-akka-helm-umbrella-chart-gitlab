@@ -1,13 +1,7 @@
 include:
   - local: '/gitlab/jobs/determine-umbrella-version.yml'
-    rules:
-      - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true" || $USE_CASE_4 == "true" || $USE_CASE_6 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
   - local: '/gitlab/jobs/package-helm-chart.yml'
-    rules:
-      - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true" || $USE_CASE_4 == "true" || $USE_CASE_6 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
   - local: '/gitlab/jobs/prepare-helm-umbrella-chart.yml'
-    rules:
-      - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true" || $USE_CASE_4 == "true" || $USE_CASE_6 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
 
 prepare-service-for-environment:
   stage: deploy
