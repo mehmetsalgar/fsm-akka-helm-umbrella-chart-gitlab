@@ -31,6 +31,8 @@ workflow:
         BRANCH_NAME: $CI_COMMIT_REF_NAME
         GIT_BRANCH_NAME: $CI_COMMIT_REF_NAME
         UMBRELLA_GRADLE_COMMAND: "helmPackage -Pversion="
+    - if: $USE_CASE_3 == "true" || $USE_CASE_5 == "true"
+      when: always
 
 #workflow:
 #  except:
