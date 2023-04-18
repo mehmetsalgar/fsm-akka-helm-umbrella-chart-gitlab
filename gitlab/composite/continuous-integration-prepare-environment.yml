@@ -29,3 +29,5 @@ cleanup-integration-environment:
     forward:
       pipeline_variables: true
       yaml_variables: true
+  rules:
+    - when: manual
