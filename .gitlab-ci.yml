@@ -204,7 +204,7 @@ cleanup-integration-environment:
     include:
       - project: 'org.salgar.fsm.akka/ci-cd-gitlab-pipelines'
         ref: 'development'
-        file: '/composite/cleanup-environment.yml'
+        file: '/composite/cleanup-environment-integration.yml'
     strategy: depend
     forward:
       pipeline_variables: true
