@@ -55,7 +55,7 @@ include:
       - if: $USE_CASE_6 == "true" && $CREATE_BRANCH != "true"
   - local: '/composite/continuous-integration-prepare-environment.yml'
     rules:
-      - if: $USE_CASE_6 == "true"
+      - if: $CI_COMMIT_REF_NAME =~ /integration/
 
 before_script:
   - GRADLE_USER_HOME="$(pwd)/.gradle"
