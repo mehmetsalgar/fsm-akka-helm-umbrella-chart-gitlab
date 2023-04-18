@@ -53,8 +53,6 @@ include:
     rules:
       - if: ($USE_CASE_2 == "true" || $USE_CASE_4 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
       - if: $USE_CASE_6 == "true" && $CREATE_BRANCH != "true"
-        variables:
-          TAG: $GitVersion_SemVer
 
 before_script:
   - GRADLE_USER_HOME="$(pwd)/.gradle"
