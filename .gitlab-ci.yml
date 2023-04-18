@@ -53,6 +53,9 @@ include:
     rules:
       - if: ($USE_CASE_2 == "true" || $USE_CASE_4 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
       - if: $USE_CASE_6 == "true" && $CREATE_BRANCH != "true"
+  - local: '/composite/continuous-integration-prepare-environment.yml'
+    rules:
+      - if: $USE_CASE_6 == "true"
 
 before_script:
   - GRADLE_USER_HOME="$(pwd)/.gradle"
@@ -78,43 +81,6 @@ delete_branch:
   rules:
     - if: ($USE_CASE_3 == "true" || $USE_CASE_5 == "true")
       when: always
-    - when: never
-
-continuous-integration-prepare-environment:
-  stage: deploy
-  needs:
-    - prepare-service-for-environment
-  variables:
-    BRANCH_NAME: $CI_COMMIT_REF_NAME
-  trigger:
-    project: 'org.salgar.fsm.akka/fsm-akka-4eyes-argocd'
-    branch: 'master'
-    strategy: depend
-  rules:
-    - if: $USE_CASE_6 == "true"
-      when: always
-    - when: never
-
-cleanup-integration-environment:
-  stage: deploy
-  needs:
-    - continuous-integration-prepare-environment
-  variables:
-    TARGET_BRANCH_NAME: $CI_COMMIT_REF_NAME
-    BRANCH_NAME: $CI_COMMIT_REF_NAME
-    USE_CASE_7: "true"
-  trigger:
-    include:
-      - project: 'org.salgar.fsm.akka/ci-cd-gitlab-pipelines'
-        ref: 'development'
-        file: '/composite/cleanup-environment-integration.yml'
-    strategy: depend
-    forward:
-      pipeline_variables: true
-      yaml_variables: true
-  rules:
-    - if: $USE_CASE_6 == "true"
-      when: manual
     - when: never
 
 release-ga:

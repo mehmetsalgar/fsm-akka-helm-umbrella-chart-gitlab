@@ -1,0 +1,31 @@
+include:
+  - local: '/composite/prepare-service-for-environment.yml'
+
+continuous-integration-prepare-environment:
+  stage: deploy
+  needs:
+    - prepare-service-for-environment
+  variables:
+    BRANCH_NAME: $CI_COMMIT_REF_NAME
+  trigger:
+    project: 'org.salgar.fsm.akka/fsm-akka-4eyes-argocd'
+    branch: 'master'
+    strategy: depend
+
+cleanup-integration-environment:
+  stage: deploy
+  needs:
+    - continuous-integration-prepare-environment
+  variables:
+    TARGET_BRANCH_NAME: $CI_COMMIT_REF_NAME
+    BRANCH_NAME: $CI_COMMIT_REF_NAME
+    USE_CASE_7: "true"
+  trigger:
+    include:
+      - project: 'org.salgar.fsm.akka/ci-cd-gitlab-pipelines'
+        ref: 'development'
+        file: '/composite/cleanup-environment-integration.yml'
+    strategy: depend
+    forward:
+      pipeline_variables: true
+      yaml_variables: true
