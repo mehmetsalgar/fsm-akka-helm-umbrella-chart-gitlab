@@ -1,4 +1,6 @@
 include:
+  - project: 'org.salgar.fsm.akka/ci-cd-gitlab-pipelines'
+    file: '/jobs/gitversion-ci-cd-plugin-extension.gitlab-ci.yml'
   - local: '/gitlab/jobs/determine-umbrella-version.yml'
   - local: '/gitlab/jobs/package-helm-chart.yml'
   - local: '/gitlab/jobs/prepare-helm-umbrella-chart.yml'
