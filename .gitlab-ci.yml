@@ -46,14 +46,14 @@ workflow:
 include:
   - project: 'org.salgar.fsm.akka/ci-cd-gitlab-pipelines'
     file: '/jobs/gitversion-ci-cd-plugin-extension.gitlab-ci.yml'
-  - local: '/composite/prepare-environment-development.yml'
+  - local: '/gitlab/composite/prepare-environment-development.yml'
     rules:
       - if: $USE_CASE_1 == "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
-  - local: '/composite/prepare-service-for-environment.yml'
+  - local: '/gitlab/composite/prepare-service-for-environment.yml'
     rules:
       - if: ($USE_CASE_2 == "true" || $USE_CASE_4 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
       - if: $USE_CASE_6 == "true" && $CREATE_BRANCH != "true"
-  - local: '/composite/continuous-integration-prepare-environment.yml'
+  - local: '/gitlab/composite/continuous-integration-prepare-environment.yml'
     rules:
       - if: $CI_COMMIT_REF_NAME =~ /integration/
 
