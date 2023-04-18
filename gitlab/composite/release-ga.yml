@@ -1,4 +1,4 @@
 include:
-  - local: '/jobs/determine-umbrella-version.yml'
-  - local: '/jobs/package-helm-chart.yml'
-  - local: '/jobs/prepare-helm-umbrella-chart.yml'
+  - local: '/gitlab/jobs/determine-umbrella-version.yml'
+  - local: '/gitlab/jobs/package-helm-chart.yml'
+  - local: '/gitlab/jobs/prepare-helm-umbrella-chart.yml'

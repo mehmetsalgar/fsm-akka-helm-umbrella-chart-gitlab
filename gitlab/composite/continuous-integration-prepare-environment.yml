@@ -1,5 +1,5 @@
 include:
-  - local: '/composite/prepare-service-for-environment.yml'
+  - local: '/gitlab/composite/prepare-service-for-environment.yml'
 
 continuous-integration-prepare-environment:
   stage: deploy
