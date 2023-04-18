@@ -1,0 +1,21 @@
+package-helm-chart:
+  stage: deploy
+  image: gradle:7.6.1-jdk17-alpine
+  needs:
+    - job: determine-umbrella-version
+      artifacts: true
+  variables:
+    UMBRELLA_VERSION: $GitVersion_SemVer
+  script:
+    - |
+      export
+      gradle --build-cache $UMBRELLA_GRADLE_COMMAND$UMBRELLA_VERSION
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: push
+    paths:
+      - build
+      - .gradle
+  artifacts:
+    paths:
+      - build/helm/charts/*.tgz

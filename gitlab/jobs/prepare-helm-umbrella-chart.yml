@@ -1,0 +1,16 @@
+prepare-helm-umbrella-chart:
+  stage: deploy
+  image: dtzar/helm-kubectl:3.11.2
+  needs:
+    - job: determine-umbrella-version
+      artifacts: true
+    - job: package-helm-chart
+      artifacts: true
+  variables:
+    CHART_NAME: "fsm-akka-helm-umbrella-chart-gitlab"
+    CHART_VERSION: $GitVersion_SemVer
+  script:
+    - |
+      echo $HELM_PASSWORD | helm registry login $HELM_URL -u $HELM_USER --password-stdin
+      echo "helm push /build/helm/charts/$CHART_NAME-$CHART_VERSION.tgz oci://$HELM_URL$HELM_PATH"
+      helm push build/helm/charts/$CHART_NAME-$CHART_VERSION.tgz oci://$HELM_URL$HELM_PATH

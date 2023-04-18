@@ -31,6 +31,10 @@ workflow:
         BRANCH_NAME: $CI_COMMIT_REF_NAME
         GIT_BRANCH_NAME: $CI_COMMIT_REF_NAME
         UMBRELLA_GRADLE_COMMAND: "helmPackage -Pversion="
+    - if: $CI_COMMIT_REF_NAME == master
+      when: always
+      variables:
+        USE_CASE_8: "true"
     - if: $USE_CASE_3 == "true" || $USE_CASE_5 == "true"
       when: always
 
@@ -42,6 +46,15 @@ workflow:
 include:
   - project: 'org.salgar.fsm.akka/ci-cd-gitlab-pipelines'
     file: '/jobs/gitversion-ci-cd-plugin-extension.gitlab-ci.yml'
+  - local: '/composite/prepare-environment-development.yml'
+    rules:
+      - if: $USE_CASE_1 == "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
+  - local: '/composite/prepare-service-for-environment.yml'
+    rules:
+      - if: ($USE_CASE_2 == "true" || $USE_CASE_4 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
+      - if: $USE_CASE_6 == "true" && $CREATE_BRANCH != "true"
+        variables:
+          TAG: $GitVersion_SemVer
 
 before_script:
   - GRADLE_USER_HOME="$(pwd)/.gradle"
@@ -55,114 +68,6 @@ create-branch:
       echo "create branch ${BRANCH_NAME}-${SOURCE_REPO}"
   rules:
     - if: ($USE_CASE_2 == "true" || $USE_CASE_4 == "true") && $CREATE_BRANCH == "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
-      when: always
-    - when: never
-
-determine-umbrella-version:
-  extends: .gitversion_function
-  rules:
-    - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true" || $USE_CASE_4 == "true" || $USE_CASE_6 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
-      when: always
-    - when: never
-
-package-helm-chart:
-  stage: deploy
-  image: gradle:7.6.1-jdk17-alpine
-  needs:
-    - job: determine-umbrella-version
-      artifacts: true
-  variables:
-    UMBRELLA_VERSION: $GitVersion_SemVer
-  script:
-    - |
-      export
-      gradle --build-cache $UMBRELLA_GRADLE_COMMAND$UMBRELLA_VERSION
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: push
-    paths:
-      - build
-      - .gradle
-  artifacts:
-    paths:
-      - build/helm/charts/*.tgz
-  rules:
-    - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true" || $USE_CASE_4 == "true" || $USE_CASE_6 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
-      when: always
-    - when: never
-
-prepare-helm-umbrella-chart:
-  stage: deploy
-  image: dtzar/helm-kubectl:3.11.2
-  needs:
-    - job: determine-umbrella-version
-      artifacts: true
-    - job: package-helm-chart
-      artifacts: true
-  variables:
-    CHART_NAME: "fsm-akka-helm-umbrella-chart-gitlab"
-    CHART_VERSION: $GitVersion_SemVer
-  script:
-    - |
-      echo $HELM_PASSWORD | helm registry login $HELM_URL -u $HELM_USER --password-stdin
-      echo "helm push /build/helm/charts/$CHART_NAME-$CHART_VERSION.tgz oci://$HELM_URL$HELM_PATH"
-      helm push build/helm/charts/$CHART_NAME-$CHART_VERSION.tgz oci://$HELM_URL$HELM_PATH
-  rules:
-    - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true" || $USE_CASE_4 == "true" || $USE_CASE_6 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
-      when: always
-    - when: never
-
-prepare-environment:
-  stage: deploy
-  needs:
-    - prepare-helm-umbrella-chart
-  variables:
-    GIT_BRANCH_NAME: $BRANCH_NAME
-    BRANCH_NAME: $BRANCH_NAME
-    SOURCE_REPO: $SOURCE_REPO
-    UMBRELLA_BASE_BRANCH_NAME: "development"
-    SERVICE_VERSION: $SERVICE_CHART_VERSION
-    GIT_CHECKOUT_COMMAND: "git checkout"
-    USE_CASE_1: $USE_CASE_1
-    USE_CASE_2: $USE_CASE_2
-    USE_CASE_3: "false"
-  trigger:
-    project: 'org.salgar.fsm.akka/fsm-akka-dev-environment'
-    branch: 'development'
-    strategy: depend
-  rules:
-    - if: $USE_CASE_1 == "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
-      when: always
-    - when: never
-
-prepare-service-for-environment:
-  stage: deploy
-  needs:
-    - job: determine-umbrella-version
-      artifacts: true
-    - prepare-helm-umbrella-chart
-  variables:
-    BRANCH_NAME: $BRANCH_NAME
-    GIT_CHECKOUT_COMMAND: "git checkout -b"
-    SERVICE_VERSION: $SERVICE_CHART_VERSION
-    SOURCE_REPO: $SOURCE_REPO
-    UMBRELLA_BASE_BRANCH_NAME: "development"
-    UMBRELLA_CHART_VERSION: $GitVersion_SemVer
-    TAG: $SOURCE_REPO-$SERVICE_CHART_VERSION
-    USE_CASE_1: $USE_CASE_1
-    USE_CASE_2: $USE_CASE_2
-    USE_CASE_4: $USE_CASE_4
-    USE_CASE_3: "false"
-  trigger:
-    project: 'org.salgar.fsm.akka/fsm-akka-dev-environment'
-    branch: $UMBRELLA_BASE_BRANCH_NAME
-    strategy: depend
-  rules:
-    - if: ($USE_CASE_2 == "true" || $USE_CASE_4 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
-      when: always
-    - if: $USE_CASE_6 == "true" && $CREATE_BRANCH != "true"
-      variables:
-        TAG: $GitVersion_SemVer
       when: always
     - when: never
 
@@ -211,5 +116,19 @@ cleanup-integration-environment:
       yaml_variables: true
   rules:
     - if: $USE_CASE_6 == "true"
+      when: manual
+    - when: never
+
+release-ga:
+  stage: deploy
+  trigger:
+    include:
+      - local: '/composite/release-ga.yml'
+    forward:
+      pipeline_variables: true
+      yaml_variables: true
+    strategy: depend
+  rules:
+    - if: $USE_CASE_8 == "true"
       when: manual
     - when: never

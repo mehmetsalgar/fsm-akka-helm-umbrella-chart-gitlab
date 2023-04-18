@@ -1,0 +1,33 @@
+include:
+  - local: '/jobs/determine-umbrella-version.yml'
+    rules:
+      - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true" || $USE_CASE_4 == "true" || $USE_CASE_6 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
+  - local: '/jobs/package-helm-chart.yml'
+    rules:
+      - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true" || $USE_CASE_4 == "true" || $USE_CASE_6 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
+  - local: '/jobs/prepare-helm-umbrella-chart.yml'
+    rules:
+      - if: ($USE_CASE_1 == "true" || $USE_CASE_2 == "true" || $USE_CASE_4 == "true" || $USE_CASE_6 == "true") && $CREATE_BRANCH != "true" && $USE_CASE_3 != "true" && $USE_CASE_5 != "true"
+
+prepare-service-for-environment:
+  stage: deploy
+  needs:
+    - job: determine-umbrella-version
+      artifacts: true
+    - prepare-helm-umbrella-chart
+  variables:
+    BRANCH_NAME: $BRANCH_NAME
+    GIT_CHECKOUT_COMMAND: "git checkout -b"
+    SERVICE_VERSION: $SERVICE_CHART_VERSION
+    SOURCE_REPO: $SOURCE_REPO
+    UMBRELLA_BASE_BRANCH_NAME: "development"
+    UMBRELLA_CHART_VERSION: $GitVersion_SemVer
+    TAG: $SOURCE_REPO-$SERVICE_CHART_VERSION
+    USE_CASE_1: $USE_CASE_1
+    USE_CASE_2: $USE_CASE_2
+    USE_CASE_4: $USE_CASE_4
+    USE_CASE_3: "false"
+  trigger:
+    project: 'org.salgar.fsm.akka/fsm-akka-dev-environment'
+    branch: $UMBRELLA_BASE_BRANCH_NAME
+    strategy: depend

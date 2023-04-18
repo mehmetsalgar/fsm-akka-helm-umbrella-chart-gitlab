@@ -1,0 +1,2 @@
+determine-umbrella-version:
+  extends: .gitversion_function
