@@ -192,7 +192,7 @@ continuous-integration-prepare-environment:
       when: always
     - when: never
 
-cleanup-integration-environment-argocd:
+cleanup-integration-environment:
   stage: deploy
   needs:
     - continuous-integration-prepare-environment
@@ -201,24 +201,14 @@ cleanup-integration-environment-argocd:
     BRANCH_NAME: $CI_COMMIT_REF_NAME
     USE_CASE_7: "true"
   trigger:
-    project: 'org.salgar.fsm.akka/fsm-akka-4eyes-argocd'
-    branch: 'master'
+    include:
+      - project: 'org.salgar.fsm.akka/ci-cd-gitlab-pipelines'
+        ref: 'development'
+        file: '/composite/cleanup-environment.yml'
     strategy: depend
-  rules:
-    - if: $USE_CASE_6 == "true"
-      when: manual
-    - when: never
-
-cleanup-integration-environment-branch:
-  stage: deploy
-  needs:
-    - prepare-service-for-environment
-  variables:
-    USE_CASE_7: "true"
-  trigger:
-    project: 'org.salgar.fsm.akka/fsm-akka-dev-environment'
-    branch: 'development'
-    strategy: depend
+    forward:
+      pipeline_variables: true
+      yaml_variables: true
   rules:
     - if: $USE_CASE_6 == "true"
       when: manual
