@@ -1,10 +1,10 @@
 mode: ContinuousDelivery
 branches:
   release:
-    tag: rc
+    tag: '{BranchName}-rc'
   integration:
     mode: ContinuousDelivery
-    tag: int
+    tag: 'int'
     increment: None
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
