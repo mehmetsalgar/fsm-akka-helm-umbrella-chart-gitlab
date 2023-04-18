@@ -35,6 +35,7 @@ workflow:
       when: always
       variables:
         USE_CASE_8: "true"
+        UMBRELLA_GRADLE_COMMAND: "helmPackage -Pversion="
     - if: $USE_CASE_3 == "true" || $USE_CASE_5 == "true"
       when: always
 
@@ -87,7 +88,7 @@ release-ga:
   stage: deploy
   trigger:
     include:
-      - local: '/composite/release-ga.yml'
+      - local: '/gitlab/composite/release-ga.yml'
     forward:
       pipeline_variables: true
       yaml_variables: true
