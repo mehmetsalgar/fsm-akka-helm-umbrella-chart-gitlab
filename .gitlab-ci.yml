@@ -87,7 +87,7 @@ release-ga:
   stage: deploy
   trigger:
     include:
-      - local: '/composite/release-ga.yml'
+      - local: '/gitlab/composite/release-ga.yml'
     forward:
       pipeline_variables: true
       yaml_variables: true
