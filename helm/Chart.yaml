@@ -10,3 +10,7 @@ dependencies:
     version: "${creditScoreVersion}"
     repository: oci://europe-west3-docker.pkg.dev/fsmakka/fsm-akka-helm-ar
     condition: credit-score.enabled
+  - name: address-check-application
+    version: "${addressCheckVersion}"
+    repository: oci://europe-west3-docker.pkg.dev/fsmakka/fsm-akka-helm-ar
+    condition: address-check.enabled
