@@ -38,7 +38,7 @@ workflow:
         UMBRELLA_GRADLE_COMMAND: "helmPackage -Pversion="
     - if: $USE_CASE_3 == "true" || $USE_CASE_5 == "true"
       when: always
-    - if: $CI_COMMIT_REF_NAME =~ /feature/epic-/
+    - if: $CI_COMMIT_REF_NAME =~ /feature\/epic\-/
       when: always
       variables:
         USE_CASE_10: "true"
