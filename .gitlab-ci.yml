@@ -38,6 +38,10 @@ workflow:
         UMBRELLA_GRADLE_COMMAND: "helmPackage -Pversion="
     - if: $USE_CASE_3 == "true" || $USE_CASE_5 == "true"
       when: always
+    - if: $CI_COMMIT_REF_NAME =~ /feature/epic-/
+      when: always
+      variables:
+        USE_CASE_10: "true"
 
 #workflow:
 #  except:
@@ -57,6 +61,9 @@ include:
   - local: '/gitlab/composite/continuous-integration-prepare-environment.yml'
     rules:
       - if: $CI_COMMIT_REF_NAME =~ /integration/
+  - local: '/gitlab/composite/continuous-epic-prepare-environment.yml'
+    rules:
+      - if: $CI_COMMIT_REF_NAME =~ /feature/epic-/
 
 before_script:
   - GRADLE_USER_HOME="$(pwd)/.gradle"
