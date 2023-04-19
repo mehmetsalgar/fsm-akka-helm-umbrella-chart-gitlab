@@ -25,7 +25,8 @@ if(ext.flag) {
             HELM_USER: property('HELM_USER'),
             HELM_PASSWORD: property('HELM_PASSWORD'),
             HELM_DOWNLOAD_CLIENT: property('HELM_DOWNLOAD_CLIENT'),
-            CREDIT_SCORE_VERSION: property('credit-score-version')
+            CREDIT_SCORE_VERSION: property('credit-score-version'),
+            ADDRESS_CHECK_VERSION: property('address-check-version')
     ]
 }
 
@@ -42,6 +43,7 @@ helm {
             filtering {
                 values.put 'appVersion', "${project.version}-${gitBranch()}"
                 values.put 'creditScoreVersion', "${props.CREDIT_SCORE_VERSION}"
+                values.put 'addressCheckVersion', "${props.ADDRESS_CHECK_VERSION}"
             }
         }
     }
