@@ -6,6 +6,7 @@ stages:
 variables:
   CREATE_BRANCH: "false"
   USE_CASE_6: "false"
+  USE_CASE_10: "false"
 
 workflow:
   rules:
@@ -42,6 +43,9 @@ workflow:
       when: always
       variables:
         USE_CASE_10: "true"
+        BRANCH_NAME: $CI_COMMIT_REF_NAME
+        GIT_BRANCH_NAME: $CI_COMMIT_REF_NAME
+        UMBRELLA_GRADLE_COMMAND: "helmPackage -Pversion="
 
 #workflow:
 #  except:
