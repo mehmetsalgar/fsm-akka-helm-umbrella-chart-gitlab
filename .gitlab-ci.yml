@@ -63,7 +63,7 @@ include:
       - if: $CI_COMMIT_REF_NAME =~ /integration/
   - local: '/gitlab/composite/continuous-epic-prepare-environment.yml'
     rules:
-      - if: $CI_COMMIT_REF_NAME =~ /feature/epic-/
+      - if: $CI_COMMIT_REF_NAME =~ /feature\/epic-/
 
 before_script:
   - GRADLE_USER_HOME="$(pwd)/.gradle"
