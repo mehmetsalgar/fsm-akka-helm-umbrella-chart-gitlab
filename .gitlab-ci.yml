@@ -35,7 +35,7 @@ workflow:
     - if: $CI_COMMIT_REF_NAME == "master"
       when: always
       variables:
-        USE_CASE_8: "true"
+        USE_CASE_9: "true"
         UMBRELLA_GRADLE_COMMAND: "helmPackage -Pversion="
     - if: $USE_CASE_3 == "true" || $USE_CASE_5 == "true"
       when: always
@@ -105,6 +105,6 @@ release-ga:
       yaml_variables: true
     strategy: depend
   rules:
-    - if: $USE_CASE_8 == "true"
+    - if: $USE_CASE_9 == "true"
       when: manual
     - when: never
